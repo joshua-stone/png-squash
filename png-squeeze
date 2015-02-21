@@ -4,28 +4,34 @@ from argparse import ArgumentParser
 from sys import exit
 from os.path import isfile
 from tempfile import NamedTemporaryFile
+from subprocess import call
 
-def optimize(infile, outfile, aggressive=False):
+def optimize(infile, outfile, full_optimization=False):
     command = [
         "optipng",
         "-strip", "all"
         "-fix",
         "-i0",
         "-o7",
-        -out", outfile
+        "-out", outfile,
+        infile
     ]
 
-   if agressive:
+   if full_optimization:
        command += ["-zm1-9"]
+
+   call(command)
 
 def compress(infile, iterations=5):
     command = [
       "advdef",
       "-z",
       "-4",
-      -i", iterations,
+      "-i", iterations,
       infile
     ]
+
+    call(command)
 
 def main(args):
     if not isfile(args["infile"]):
