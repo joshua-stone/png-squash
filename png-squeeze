@@ -17,10 +17,10 @@ def optimize(infile, outfile, full_optimization=False):
         infile
     ]
 
-   if full_optimization:
-       command += ["-zm1-9"]
+    if full_optimization:
+        command += ["-zm1-9"]
 
-   call(command)
+    call(command)
 
 def compress(infile, iterations=5):
     command = [
