@@ -5,14 +5,16 @@ from sys import exit
 from os.path import isfile
 from tempfile import NamedTemporaryFile
 from subprocess import call
+from shutil import copyfile
 
 def optimize(infile, outfile, full_optimization=False):
     command = [
         "optipng",
-        "-strip", "all"
+        "-strip", "all",
         "-fix",
         "-i0",
         "-o7",
+        "-clobber",
         "-out", outfile,
         infile
     ]
@@ -24,22 +26,38 @@ def optimize(infile, outfile, full_optimization=False):
 
 def compress(infile, iterations=5):
     command = [
-      "advdef",
-      "-z",
-      "-4",
-      "-i", iterations,
-      infile
+        "advdef",
+        "-z",
+        "-4",
+        "-i", str(iterations),
+        infile
     ]
 
     call(command)
 
 def main(args):
-    if not isfile(args["infile"]):
-        print("{} isn't a file. Aborting.".format(args["infile"]))
+    infile = args["infile"]
+
+    if args["outfile"]:
+        outfile = args["outfile"]
+    else:
+        outfile = infile
+
+    if not isfile(infile):
+        print("{} isn't a file. Aborting.".format(infile))
         exit()
+
+    with NamedTemporaryFile() as tempfile:
+        temp = tempfile.name
+
+        optimize(infile, temp)
+        compress(temp)
+
+        copyfile(temp, outfile)
 
 if __name__ == "__main__":
     parser = ArgumentParser(prog="png-squeeze", description="An aggressive PNG optimizer")
     parser.add_argument("-i", "--infile", required=True, help="Input file")
+    parser.add_argument("-o", "--outfile", required=False, help="Output file")
 
     main(vars(parser.parse_args()))
