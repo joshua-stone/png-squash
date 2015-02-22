@@ -42,7 +42,7 @@ def compress(infile, iterations=5):
     call(command)
 
 def main(args):
-    infile = args["infile"]
+    infile, level = args["infile"], args["level"]
 
     if args["outfile"]:
         outfile = args["outfile"]
@@ -56,14 +56,17 @@ def main(args):
     with NamedTemporaryFile() as tempfile:
         temp = tempfile.name
 
-        optimize(infile, temp)
+        optimize(infile, temp, level)
         compress(temp)
 
         copyfile(temp, outfile)
 
 if __name__ == "__main__":
-    parser = ArgumentParser(prog="png-squeeze", description="An aggressive PNG optimizer")
-    parser.add_argument("-i", "--infile", required=True, help="Input file")
+    parser = ArgumentParser(prog="png-squeeze",
+                            description="An aggressive PNG reducer and compressor")
+    parser.add_argument("-i", "--infile", required=False, help="Input file")
     parser.add_argument("-o", "--outfile", required=False, help="Output file")
+    parser.add_argument("-O", choices=["0","1", "2", "3"],
+                        help="Optimization level. Higher levels usually get more smaller files, but take much longer to process.")
 
-    main(vars(parser.parse_args()))
+    main(parser.parse_args())
