@@ -7,20 +7,26 @@ from tempfile import NamedTemporaryFile
 from subprocess import call
 from shutil import copyfile
 
-def optimize(infile, outfile, full_optimization=False):
+def optimize(infile, outfile, level=0):
+    optimization_levels = {
+        0: ["-o3"],
+        1: ["-o5"],
+        2: ["-o7"],
+        3: ["-o7", "-zm1-9"]
+    }
+
     command = [
         "optipng",
         "-strip", "all",
         "-fix",
         "-i0",
-        "-o7",
         "-clobber",
         "-out", outfile,
         infile
     ]
 
-    if full_optimization:
-        command += ["-zm1-9"]
+    if level in optimization_levels:
+      command += optimization_levels[level]
 
     call(command)
 
